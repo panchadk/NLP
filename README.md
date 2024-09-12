@@ -1,74 +1,9 @@
 # NLP
 
-import os
-import numpy as np
-import random
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.metrics import f1_score
+Natural Language Processing (NLP) is a field of artificial intelligence that focuses on the interaction between computers and human language. One of the foundational techniques in NLP is the Bag of Words (BoW) model, which represents text as a collection of words without regard to grammar or word order. In this model, a text is transformed into a vector based on word frequency or binary indicators (presence or absence of words), making it easy to analyze using machine learning algorithms. While BoW is simple and effective for many tasks, its major limitation is the lack of contextual understanding since it doesn't capture relationships between words.
 
-import json
+As NLP research advanced, more sophisticated models like Word2Vec and GloVe were developed, allowing for the creation of dense vector representations of words, known as word embeddings. These embeddings capture semantic meaning by placing words with similar meanings close to each other in the vector space. However, these models still have limitations in dealing with polysemy (words with multiple meanings) and understanding complex sentence structures. Although Word2Vec and GloVe significantly improved NLP tasks like text classification, sentiment analysis, and machine translation, they still treated words independently without considering their position in a sentence.
 
-class Review:
-    def __init__(self, category, text):
-        self.category = category
-        self.text = text    
-        
-class ReviewContainer:
-    def __init__(self, reviews):
-        self.reviews = reviews
-    
-    def get_text(self):
-        return [x.text for x in self.reviews]
-    
-    def get_y(self):
-        return [x.category for x in self.reviews]
+The introduction of BERT (Bidirectional Encoder Representations from Transformers) marked a major leap in NLP by addressing many of these shortcomings. BERT is a transformer-based model that considers the context of a word based on both its left and right surroundings in a sentence, allowing it to better understand the meaning of ambiguous words and capture relationships within text. Unlike traditional methods like BoW or Word2Vec, BERT is pre-trained on large amounts of text data and fine-tuned for specific NLP tasks such as question answering, named entity recognition, and sentiment analysis. BERT’s ability to process language bidirectionally makes it much more powerful for tasks requiring deeper understanding.
 
-
-train_reviews = []
-all_categories = []
-for file in os.listdir('./NLP/data/training'):
-    category = file.strip('train_').split('.')[0]
-    all_categories.append(category)
-    with open(f'./NLP/data/training/{file}') as f:
-        for line in f:
-            review_json = json.loads(line)
-            review = Review(category, review_json['reviewText'])
-            train_reviews.append(review)
-
-train_container = ReviewContainer(train_reviews)
-
-
-
-
-test_reviews = []
-for file in os.listdir('./NLP/data/test'):
-    category = file.strip('test_').split('.')[0]
-    with open(f'./NLP/data/test/{file}') as f:
-        for line in f:
-            review_json = json.loads(line)
-            review = Review(category, review_json['reviewText'])
-            test_reviews.append(review)
-            
-test_container = ReviewContainer(test_reviews)
-
-from sklearn import svm
-
-corpus = train_container.get_text()
-vectorizer = CountVectorizer(binary=True)
-train_x = vectorizer.fit_transform(corpus) # training text converted to vector
-
-clf = svm.SVC(kernel='linear')
-clf.fit(train_x, train_container.get_y())
-
-# make sure to convert test text to vector form
-test_corpus = test_container.get_text()
-test_x = vectorizer.transform(test_corpus)
-
-print("Overall Accuracy:", clf.score(test_x, test_container.get_y()))
-
-y_pred = clf.predict(test_x)
-
-print("f1 scores by category")
-print(all_categories)
-print(f1_score(test_container.get_y(), y_pred, average=None, labels=all_categories))
+In recent years, BERT and its variants like RoBERTa, DistilBERT, and GPT have dominated NLP research, enabling the development of state-of-the-art models across a range of applications. These models, while complex and computationally intensive, have set new benchmarks in understanding language with unprecedented accuracy. Though traditional models like BoW remain relevant for simple tasks or resource-constrained environments, modern transformer-based models like BERT are rapidly becoming the standard for tackling more challenging problems in NLP, offering greater flexibility, accuracy, and contextual awareness in language understanding.
